@@ -1,5 +1,8 @@
 -- when we source this file and a table already exists we will delete it
 -- then we create a new table with correct info
+
+-- votes table must come first because it relies on all the other tables
+DROP TABLE IF EXISTS votes;
 DROP TABLE IF EXISTS candidates;
 DROP TABLE IF EXISTS parties;
 DROP TABLE IF EXISTS voters;
@@ -32,4 +35,22 @@ CREATE TABLE voters (
   -- we use DATETIME data type
   -- we set the DEFAULT setting to CURRENT_TIMESTAMP
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+CREATE TABLE votes (
+  id INTEGER AUTO_INCREMENT PRIMARY KEY,
+  -- we need to keep track of each vote
+  voter_id INTEGER NOT NULL,
+  -- we need to keep track of each candidate
+  candidate_id INTEGER NOT NULL,
+  -- gives us the time of the vote
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  -- voter ids must be unique
+  CONSTRAINT uc_voter UNIQUE (voter_id),
+  -- we set foreign key to voters table (id)
+  CONSTRAINT fk_voter FOREIGN KEY (voter_id) REFERENCES voters(id) ON DELETE CASCADE,
+  -- we set foreign key to the candidates table (id)
+  CONSTRAINT fk_candidate FOREIGN KEY (candidate_id) REFERENCES candidates(id) ON DELETE CASCADE
 );
