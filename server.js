@@ -73,6 +73,8 @@ const db = mysql.createConnection (
 // except its better for more data
 // res.json is sending an object with a message whose value is
 // "hello world"
+
+
 /* app.get('/', (req, res) => {
     res.json({
         message: "Hello World"
@@ -93,7 +95,17 @@ const db = mysql.createConnection (
 // we name our endpoint as /api/candidates
 app.get('/api/candidates', (req, res) => {
 
-    const sql = `SELECT * FROM candidates`;
+
+    // the template literal is selecting from the candidates table
+    // since we are selecting from both tables we use . notation
+    // we still use the wildcard after the . notation to say we want
+    // everything from the table. 
+    // we are only selecting 'name' from parties table
+    // we rename 'name' to party_name using AS (alias)
+    // we join the parties table with the condition that
+    // the party_id field in candidates has a match in the id field 
+    // of the parties table
+    const sql = `SELECT candidates.*, parties.name AS party_name FROM candidates LEFT JOIN parties ON candidates.party_id = parties.id`;
   
     db.query(sql, (err, rows) => {
       if (err) {
@@ -121,7 +133,10 @@ app.get('/api/candidates', (req, res) => {
 // this endpoint has a parameter of id, which can be any id
 app.get('/api/candidate/:id', (req, res) => {
 
-    const sql = `SELECT * FROM candidates WHERE id = ?`;
+    // the WHERE statement lets us select a specific value form the table
+    // in this case we use a placeholder 
+    const sql = `SELECT candidates.*, parties.name AS party_name FROM candidates LEFT JOIN parties ON candidates.party_id = parties.id WHERE candidates.id = ?`;
+
     // in our parameters array we specify that req.params object has
     // a single element of id
     const params = [req.params.id];
@@ -224,7 +239,7 @@ app.post('/api/candidate', ({ body }, res) => {
 const sql = `INSERT INTO candidates (id, first_name, last_name, industry_connected) VALUES (?, ?, ?, ?)`;
 
 
-const params = [1, 'Ronald', 'Firbank', 1];
+const params = [0, 'Ronald', 'Firbank', 1];
 
 // now the actual query function
 // we pass our template literal for data insertion in as argument
